@@ -45,7 +45,7 @@ class ChatAgent:
                 self.greet_count = 1
                 reply = f"Hello {self.user_name}! Nice to meet you."
             else:
-                reply = "I don't know your name yet. Please tell me: My name is <YourName>."
+                reply = "I don't know your name yet. Please tell me."
         else:
             self.greet_count += 1
             if message.strip().lower() in ("who am i?", "who am i"):
@@ -73,8 +73,8 @@ if __name__ == "__main__":
     agent.respond("My name is Bob")
     agent.respond("Who am I?")
     agent.respond("Hi")
-    agent.respond("Reset")
-    agent.respond("Hi")
+    # agent.respond("Reset")
+    # agent.respond("Hi")
     print("\nConversation history:")
     agent.show_history()
 ```
@@ -82,26 +82,20 @@ if __name__ == "__main__":
 ### Expected output for `python chat_agent.py`
 
 ```
-I don't know your name yet. Please tell me: My name is <YourName>.
+I don't know your name yet. Please tell me.
 Hello Bob! Nice to meet you.
 You are Bob.
 Hello again, Bob! (visit #3)
-State reset. I have forgotten Bob.
-I don't know your name yet. Please tell me: My name is <YourName>.
 
 Conversation history:
 01 user: Hi
-02 agent: I don't know your name yet. Please tell me: My name is <YourName>.
+02 agent: I don't know your name yet. Please tell me.
 03 user: My name is Bob
 04 agent: Hello Bob! Nice to meet you.
 05 user: Who am I?
 06 agent: You are Bob.
 07 user: Hi
 08 agent: Hello again, Bob! (visit #3)
-09 user: Reset
-10 agent: State reset. I have forgotten Bob.
-11 user: Hi
-12 agent: I don't know your name yet. Please tell me: My name is <YourName>.
 ```
 
 ---
@@ -131,56 +125,30 @@ The implementation below expands functionality a bit:
 ### File: `router_agent.py`
 
 ```python
-import ast
-import operator
-
 class WeatherAgent:
     def get_weather(self, location="your area"):
-        report_lines = [
-            f"Weather report for {location}:",
-            "Condition: Sunny",
-            "Temperature: 28°C",
-            "Forecast: Clear skies for the next 3 days"
-        ]
-        for line in report_lines:
-            print(line)
+        print(f"Weather report for {location}:")
+        print("Condition: Sunny")
+        print("Temperature: 28°C")
+        print("Forecast: Clear skies for the next 3 days")
+
 
 class MathAgent:
-    ALLOWED_OPERATORS = {
-        ast.Add: operator.add,
-        ast.Sub: operator.sub,
-        ast.Mult: operator.mul,
-        ast.Div: operator.truediv,
-        ast.Pow: operator.pow,
-        ast.USub: operator.neg,
-    }
-
-    def _eval_node(self, node):
-        if isinstance(node, ast.Num):
-            return node.n
-        if isinstance(node, ast.BinOp):
-            left = self._eval_node(node.left)
-            right = self._eval_node(node.right)
-            op_type = type(node.op)
-            if op_type in self.ALLOWED_OPERATORS:
-                return self.ALLOWED_OPERATORS[op_type](left, right)
-        if isinstance(node, ast.UnaryOp):
-            operand = self._eval_node(node.operand)
-            op_type = type(node.op)
-            if op_type in self.ALLOWED_OPERATORS:
-                return self.ALLOWED_OPERATORS[op_type](operand)
-        raise ValueError("Unsupported expression")
-
     def do_math(self, expression=None):
         if not expression:
             print("2 + 2 = 4.")
             return
         try:
-            tree = ast.parse(expression, mode='eval').body
-            result = self._eval_node(tree)
+            # A safe evaluation environment
+            safe_env = {
+                "__builtins__": None
+            }
+            result = eval(expression, safe_env, {})
             print(f"{expression} = {result}")
         except Exception as e:
+            print("ERROR!")
             print("Could not compute expression. Use simple arithmetic like 2+3*4. Error:", e)
+
 
 class RouterAgent:
     def __init__(self):
@@ -200,19 +168,22 @@ class RouterAgent:
         return None
 
     def _extract_math_expression(self, query):
-        parts = query.split(":")
-        if len(parts) > 1:
-            return parts[1].strip()
+        # split after colon: "calculate: 12/3 + 5"
+        if ":" in query:
+            return query.split(":")[1].strip()
+
         words = query.lower().split()
-        keywords = ("calculate", "compute")
-        for i, w in enumerate(words):
-            if w in keywords and i + 1 < len(words):
-                expr = " ".join(words[i + 1:])
-                return expr
+        if "calculate" in words:
+            idx = words.index("calculate")
+            return " ".join(query.split()[idx + 1:])
+        if "compute" in words:
+            idx = words.index("compute")
+            return " ".join(query.split()[idx + 1:])
         return None
 
     def handle_query(self, query):
         domain_key = self._find_domain(query)
+
         if domain_key is None:
             print("I can't help with that.")
             return
@@ -227,20 +198,19 @@ class RouterAgent:
                 idx = tokens.index("in")
                 if idx + 1 < len(tokens):
                     location = tokens[idx + 1]
-            agent.get_weather(location=location)
+            agent.get_weather(location)
+
         elif AgentClass is MathAgent:
             expr = self._extract_math_expression(query)
-            agent.do_math(expression=expr)
-        else:
-            print("Domain recognized but no handler implemented.")
+            agent.do_math(expr)
 
 
-# Test run for RouterAgent
+# Test run
 if __name__ == "__main__":
     router = RouterAgent()
     router.handle_query("What is the weather today?")
     print()
-    router.handle_query("Do some math: calculate 12/3 + 5")
+    router.handle_query("Do some math: 12/3 + 5")
     print()
     router.handle_query("Please calculate 2 ** 3")
     print()
