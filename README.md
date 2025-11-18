@@ -1,6 +1,8 @@
 # Agentic AI
 
 # 1. Stateful Agent — `ChatAgent`
+A stateful agent is a program that remembers information from previous interactions and uses that stored information (state) to respond in future interactions.
+Example: remembering a user’s name after they tell it once.
 
 ### Problem (brief)
 
@@ -101,6 +103,8 @@ Conversation history:
 ---
 
 # 2. Router Agent — `RouterAgent`, `WeatherAgent`, `MathAgent`
+A router agent is a program that examines a user’s query and directs it to the correct specialized agent (like weather agent, math agent, etc.) based on keywords or rules.
+It works like a traffic controller that routes each request to the right handler.
 
 ### Problem (brief)
 
