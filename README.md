@@ -236,8 +236,6 @@ Forecast: Clear skies for the next 3 days
 I can't help with that.
 ```
 
-> Note: Depending on how you type the math queries, the router attempts to extract an expression after keywords like `calculate:` or `calculate`/`compute`. The `MathAgent` evaluator is intentionally small and safe: it supports basic numeric literals and the operators defined in `ALLOWED_OPERATORS`. It will raise an error for unsupported constructs.
-
 ---
 
 # How to run
