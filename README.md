@@ -10,12 +10,12 @@ Example: remembering a user’s name after they tell it once.
 * `__init__` should set `self.user_name = None`.
 * Implement `respond(self, message)`:
 
-  * If `self.user_name` is `None`, check if the message is of the form `"My name is Bob"`. If so set `self.user_name = "Bob"` and print `"Hello Bob!"`.
+  * If `self.user_name` is `None`, check if the message is of the form `"My name is Sakshith"`. If so set `self.user_name = "Sakshith"` and print `"Hello Sakshith!"`.
   * If `self.user_name` is set, just print `f"Hello again, {self.user_name}!"`.
 * Test by calling:
 
   * `respond("Hi")`
-  * `respond("My name is Bob")`
+  * `respond("My name is Sakshith")`
   * `respond("Hi")` again
 
 ### File: `chat_agent.py`
@@ -72,7 +72,7 @@ class ChatAgent:
 if __name__ == "__main__":
     agent = ChatAgent()
     agent.respond("Hi")
-    agent.respond("My name is Bob")
+    agent.respond("My name is Sakshith")
     agent.respond("Who am I?")
     agent.respond("Hi")
     # agent.respond("Reset")
@@ -85,19 +85,19 @@ if __name__ == "__main__":
 
 ```
 I don't know your name yet. Please tell me.
-Hello Bob! Nice to meet you.
-You are Bob.
-Hello again, Bob! (visit #3)
+Hello sakshith! Nice to meet you.
+You are Sakshith.
+Hello again, Sakshith! (visit #3)
 
 Conversation history:
 01 user: Hi
 02 agent: I don't know your name yet. Please tell me.
-03 user: My name is Bob
-04 agent: Hello Bob! Nice to meet you.
+03 user: My name is Sakshith
+04 agent: Hello Sakshith! Nice to meet you.
 05 user: Who am I?
-06 agent: You are Bob.
+06 agent: You are Sakshith.
 07 user: Hi
-08 agent: Hello again, Bob! (visit #3)
+08 agent: Hello again, Sakshith! (visit #3)
 ```
 
 ---
